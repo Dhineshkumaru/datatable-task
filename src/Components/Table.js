@@ -5,11 +5,6 @@ const [trData, setTrData] = useState([]);
 useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/users').then(res => res.json()).then(data => setTrData(data))
 }, [])
-  // const data = [
-  //   { name: "Anom", age: 19, gender: "Male" },
-  //   { name: "Megha", age: 19, gender: "Female" },
-  //   { name: "Subham", age: 25, gender: "Male" },
-  // ]
   const tableColumnNames = [
     'Column1',
     'Column2',
