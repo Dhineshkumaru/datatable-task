@@ -12,5 +12,54 @@ th, td {
     margin: 10px;
 }
 table{
-    width:100%
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
 }
+
+table thead tr th {
+    padding: 3px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    width: 25vw;
+  }
+
+  table thead tr th:nth-of-type(1) {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: grey;
+  }
+  table thead tr th:nth-of-type(2) {
+    position: sticky;
+    left: 177px;
+    z-index: 2;
+    background: grey;
+  }
+
+  table tbody tr td {
+    padding: 3px;
+    position: sticky;
+    z-index: 1;
+    
+  }
+
+  table tbody tr td:nth-of-type(1) {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: grey;
+  }
+  table tbody tr td:nth-of-type(2) {
+    position: sticky;
+    left: 177px;
+    z-index: 2;
+    background: grey;
+  }
+//   table tbody th {
+//     position: sticky;
+//     left: 0;
+//     background: white;
+//     z-index: 1;
+//   }
