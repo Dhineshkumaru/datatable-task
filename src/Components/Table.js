@@ -1,5 +1,6 @@
 import './Table.scss';
 import { useEffect, useState } from 'react';
+import AddTableData from './AddTableData/AddTableData'
 const Table = () => {
 const [trData, setTrData] = useState([]);
 useEffect(() => {
@@ -55,7 +56,11 @@ useEffect(() => {
   });
   return (
     <div className='table-center'>
-      <h2>Data table</h2>
+      <div>
+        <h2>Data table</h2>
+        <AddTableData></AddTableData>
+      </div>
+
       <table>
         <thead>
           <tr>
