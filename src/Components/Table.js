@@ -3,71 +3,89 @@ import { useEffect, useState } from 'react';
 import AddTableData from './AddTableData/AddTableData'
 const Table = () => {
 const [trData, setTrData] = useState([]);
+const [newTrData, setNewTrData] = useState([]);
+const [isChecked, setIsChecked] = useState([]);
+const [newlyAddedIsChecked, setNewlyAddedIsChecked] = useState([]);
 useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/users').then(res => res.json()).then(data => setTrData(data))
-}, [])
-  const tableColumnNames = [
-    'Column1',
-    'Column2',
-    'Column3',
-    'Column4',
-    'Column5',
-    'Column6',
-    'Column7',
-    'Column8',
-    'Column9',
-    'Column10',
-    'Column11',
-    'Column12',
-    'Column13',
-    'Column14',
-    'Column15',
-    'Column16',
-    'Column17',
-    'Column18',
-    'Column19',
-    'Column20',
-  ];
+    fetch('https://retoolapi.dev/UvRrOB/data')
+    .then(res => res.json())
+    .then(data => setTrData(data))
+    }, [])
+
+const tableColumnData = trData.length > 0 ? Object.entries(trData[0])
+          .filter(([key]) => key.startsWith("Column "))
+          .map(([key, columnData]) => <th >{key}</th>) : null;
+const checkBoxHandler = (e, rowIndex)=>{
+  if(e.target.checked){
+    setIsChecked(prevCheckedRows => [...prevCheckedRows, rowIndex])
+  }else{
+    setIsChecked(prevCheckedRows => prevCheckedRows.filter(index => index !== rowIndex))
+  }
+}
+const newcheckBoxHandler = (e, rowIndex)=>{
+  if(e.target.checked){
+    setNewlyAddedIsChecked(prevCheckedRows => [...prevCheckedRows, rowIndex])
+  }else{
+    setNewlyAddedIsChecked(prevCheckedRows => prevCheckedRows.filter(index => index !== rowIndex))
+  }
+}
+
   const tableRowData = trData.map((val, key) => {
+    const filteredIDValues = Object.entries(val).filter(([key, value]) => key !== "id");
+    const isCheckedRow = isChecked.includes(key);
     return (
-      <tr key={key}>
-        <td>{val.name}</td>
-        <td>{val.username}</td>
-        <td>{val.address.city}</td>
-        <td>{val.name}</td>
-        <td>{val.username}</td>
-        <td>{val.address.city}</td>
-        <td>{val.name}</td>
-        <td>{val.username}</td>
-        <td>{val.address.city}</td>
-        <td>{val.name}</td>
-        <td>{val.username}</td>
-        <td>{val.address.city}</td>
-        <td>{val.name}</td>
-        <td>{val.username}</td>
-        <td>{val.address.city}</td>
-        <td>{val.name}</td>
-        <td>{val.username}</td>
-        <td>{val.address.city}</td>
-        <td>{val.name}</td>
-        <td>{val.username}</td>
-      </tr>
-    )
+      <>
+        <tr key={key} className={isCheckedRow ? 'highlight' : ''}>
+          <td>
+            <input type={'checkbox'} checked={isCheckedRow} onChange={(e)=>checkBoxHandler(e, key)}/>
+          </td>
+          {filteredIDValues.map(([key, value]) => (
+            <td key={key}>{value}</td>
+          ))}
+          {filteredIDValues.map(([key, value]) => (
+            <td key={key}>{value}</td>
+          ))}
+        </tr>
+      </>
+    );
   });
+
+  const addedRow = newTrData.map((addedData, key) => {
+    const isCheckedNewRow = newlyAddedIsChecked.includes(key);
+    return(
+      <tr key={key} className={isCheckedNewRow ? 'highlight' : ''}>
+        <td>
+          <input type={'checkbox'} checked={isCheckedNewRow} onChange={(e)=>newcheckBoxHandler(e, key)}/>
+        </td>
+        {addedData.map(arrAddedData => <td>{arrAddedData}</td>)}
+      </tr>)
+    });
+
+const getAddedRowdataHandler =(data)=>{
+  setNewTrData(prevData => [...prevData, data]);
+}
+
   return (
     <div className='table-center'>
       <div>
         <h2>Data table</h2>
-        <AddTableData></AddTableData>
+        <AddTableData getAddedRowdata = {getAddedRowdataHandler}></AddTableData>
       </div>
 
       <table>
         <thead>
           <tr>
-            {tableColumnNames.map((heading, key) => <th key={key}>{heading}</th>)}
+            <td>
+              <input type={'checkbox'} />
+            </td>
+            {tableColumnData}
+            {tableColumnData}
           </tr>
         </thead>
-        <tbody>{tableRowData}</tbody>
+        <tbody>
+          {addedRow}
+          {tableRowData}
+        </tbody>
       </table>
     </div>
   )
