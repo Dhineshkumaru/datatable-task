@@ -1,6 +1,7 @@
 import './Table.scss';
 import { useEffect, useState } from 'react';
 import AddTableData from './AddTableData/AddTableData'
+import DeleteRow from './DeleteRow/DeleteRow'
 const Table = () => {
 const [trData, setTrData] = useState([]);
 const [newTrData, setNewTrData] = useState([]);
@@ -49,21 +50,28 @@ const newcheckBoxHandler = (e, rowIndex)=>{
       </>
     );
   });
-
-  const addedRow = newTrData.map((addedData, key) => {
+  
+  const getAddedRowdataHandler =(data)=>{
+    setNewTrData(prevData => [...prevData, data]);
+  }
+  const addedRow = newTrData.map((val, key) => {
+    const newfilteredIDValues = Object.entries(val);
     const isCheckedNewRow = newlyAddedIsChecked.includes(key);
-    return(
-      <tr key={key} className={isCheckedNewRow ? 'highlight' : ''}>
-        <td>
-          <input type={'checkbox'} checked={isCheckedNewRow} onChange={(e)=>newcheckBoxHandler(e, key)}/>
-        </td>
-        {addedData.map(arrAddedData => <td>{arrAddedData}</td>)}
-      </tr>)
-    });
+    return (
+      <>
+        <tr key={key} className={isCheckedNewRow ? 'highlight' : ''}>
+          <td>
+            <input type={'checkbox'} checked={isCheckedNewRow} onChange={(e)=>newcheckBoxHandler(e, key)}/>
+          </td>
+          {newfilteredIDValues.map(([key, value]) => (
+            <td key={key}>{value}</td>
+          ))}
+        </tr>
+      </>
+    );
+  });
 
-const getAddedRowdataHandler =(data)=>{
-  setNewTrData(prevData => [...prevData, data]);
-}
+
 
   return (
     <div className='table-center'>
@@ -87,6 +95,7 @@ const getAddedRowdataHandler =(data)=>{
           {tableRowData}
         </tbody>
       </table>
+      <DeleteRow></DeleteRow>
     </div>
   )
 }
