@@ -23,6 +23,12 @@ const checkBoxHandler = (e, rowIndex)=>{
     setIsChecked(prevCheckedRows => prevCheckedRows.filter(index => index !== rowIndex))
   }
 }
+const deleteCheckedRows = () => {
+  setTrData(prevData => prevData.filter((_, index) => !isChecked.includes(index)));
+  setNewTrData(newTrPrevData => newTrPrevData.filter((_, index) => !isChecked.includes(index)));
+  setIsChecked([]);
+  setNewlyAddedIsChecked([]);
+}
 const newcheckBoxHandler = (e, rowIndex)=>{
   if(e.target.checked){
     setNewlyAddedIsChecked(prevCheckedRows => [...prevCheckedRows, rowIndex])
@@ -95,7 +101,7 @@ const newcheckBoxHandler = (e, rowIndex)=>{
           {tableRowData}
         </tbody>
       </table>
-      <DeleteRow></DeleteRow>
+      <DeleteRow delete={deleteCheckedRows}></DeleteRow>
     </div>
   )
 }

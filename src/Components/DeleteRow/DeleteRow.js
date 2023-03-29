@@ -1,8 +1,9 @@
 import './DeleteRow.scss';
 
-function DeleteRow(){
+
+function DeleteRow(props){
     return(
-        <button  className='delete-btn'>DELETE</button>
+        <button onClick={props.delete} className='delete-btn'>DELETE</button>
     )
 }
 
