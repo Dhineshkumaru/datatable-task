@@ -2,6 +2,7 @@ import './Table.scss';
 import { useEffect, useState } from 'react';
 import AddTableData from './AddTableData/AddTableData'
 import DeleteRow from './DeleteRow/DeleteRow'
+import Pagination from './Pagination/Pagination'
 const Table = () => {
 const [trData, setTrData] = useState([]);
 const [newTrData, setNewTrData] = useState([]);
@@ -13,7 +14,9 @@ useEffect(() => {
     .then(data => setTrData(data))
     }, [])
 
-const tableColumnData = trData.length > 0 ? Object.entries(trData[0])
+
+const renderTableData = (data)=>{
+  const tableColumnData = data.length > 0 ? Object.entries(data[0])
           .filter(([key]) => key.startsWith("Column "))
           .map(([key, columnData]) => <th >{key}</th>) : null;
 const checkBoxHandler = (e, rowIndex)=>{
@@ -23,9 +26,18 @@ const checkBoxHandler = (e, rowIndex)=>{
     setIsChecked(prevCheckedRows => prevCheckedRows.filter(index => index !== rowIndex))
   }
 }
+
 const deleteCheckedRows = () => {
-  setTrData(prevData => prevData.filter((_, index) => !isChecked.includes(index)));
-  setNewTrData(newTrPrevData => newTrPrevData.filter((_, index) => !isChecked.includes(index)));
+  setTrData(prevData => {
+    return prevData.filter((_, index) => {
+      return !isChecked.includes(index)
+    })
+  });
+  setNewTrData(newTrPrevData => {
+    return newTrPrevData.filter((_, index) => {
+      return !newlyAddedIsChecked.includes(index)
+    })
+  });
   setIsChecked([]);
   setNewlyAddedIsChecked([]);
 }
@@ -37,7 +49,7 @@ const newcheckBoxHandler = (e, rowIndex)=>{
   }
 }
 
-  const tableRowData = trData.map((val, key) => {
+  const tableRowData = data.map((val, key) => {
     const filteredIDValues = Object.entries(val).filter(([key, value]) => key !== "id");
     const isCheckedRow = isChecked.includes(key);
     return (
@@ -76,9 +88,6 @@ const newcheckBoxHandler = (e, rowIndex)=>{
       </>
     );
   });
-
-
-
   return (
     <div className='table-center'>
       <div>
@@ -89,8 +98,14 @@ const newcheckBoxHandler = (e, rowIndex)=>{
       <table>
         <thead>
           <tr>
-            <td>
-              <input type={'checkbox'} />
+            <td className='tableCheckboxHeader'>
+            <input  type={'checkbox'} checked={isChecked.length === data.length} onChange={(e) => {
+                  if (e.target.checked) {
+                    setIsChecked([...Array(data.length).keys()]);
+                  } else {
+                    setIsChecked([]);
+                  }
+                }} />
             </td>
             {tableColumnData}
             {tableColumnData}
@@ -104,6 +119,16 @@ const newcheckBoxHandler = (e, rowIndex)=>{
       <DeleteRow delete={deleteCheckedRows}></DeleteRow>
     </div>
   )
+}
+return (
+    <div>
+      <Pagination 
+      renderTableData={renderTableData} 
+      dataGET={[...trData, ...newTrData]}
+      itemsPerPages={5} 
+      pageLimit={5} />
+    </div>
+  );
 }
 
 export default Table
