@@ -3,7 +3,7 @@ import {useState, useRef} from 'react';
 
 const AddTableData = (props)=>{
     const [isOpenDialog, setIsOpenDialog] = useState(false);
-    const [addRowData, setAddRowData] = useState([]);
+    // const [addRowData, setAddRowData] = useState([]);
     const columnInputRef = useRef(null);
     const openDialog = () =>{
         setIsOpenDialog(true)
@@ -18,6 +18,7 @@ const AddTableData = (props)=>{
         for (let [name, value] of formData.entries()) {
           data[name] = value;
         }
+        // console.log(data);
         props.getAddedRowdata(data);
         setIsOpenDialog(false);
     }

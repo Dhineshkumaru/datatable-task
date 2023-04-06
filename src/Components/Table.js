@@ -3,11 +3,17 @@ import { useEffect, useState } from 'react';
 import AddTableData from './AddTableData/AddTableData'
 import DeleteRow from './DeleteRow/DeleteRow'
 import Pagination from './Pagination/Pagination'
+import filterIcon from '../filter.png'
 const Table = () => {
 const [trData, setTrData] = useState([]);
 const [newTrData, setNewTrData] = useState([]);
 const [isChecked, setIsChecked] = useState([]);
 const [newlyAddedIsChecked, setNewlyAddedIsChecked] = useState([]);
+const [isFilterChecked, setIsFilterChecked] = useState([]);
+const [isFilterOpenDialog, setIsFilterOpenDialog] = useState(false);
+const [filterOptions, setfilterOptions] = useState();
+const [paginatedData, setPaginatedData] = useState([]);
+const [hiddenIds, setHiddenIds] = useState([]);
 useEffect(() => {
     fetch('https://retoolapi.dev/UvRrOB/data')
     .then(res => res.json())
@@ -16,9 +22,43 @@ useEffect(() => {
 
 
 const renderTableData = (data)=>{
+  const filterRow = (e, rowIndex)=>{
+    const options = data.map((val, keyIndex) => {
+      const filteredOptions = Object.entries(val).filter(([key, value]) => key === rowIndex);
+      return (
+        <ul className='filter-option'>{
+          filteredOptions.map(([key, value]) => {
+            return(
+            <li   key={val.id} >
+              <span>
+                <input 
+                name={val.id} 
+                type={'checkbox'}  
+                onChange={(e)=> filterCheckBoxHandler(e, val.id)} 
+                />
+              </span>
+              <span>{value}</span>
+              </li>
+        )})
+        }
+        </ul>
+      )
+    })
+    setfilterOptions(options)
+    setIsFilterOpenDialog(!isFilterOpenDialog)
+  }
+  const closeFilterDialog = ()=>{
+    setIsFilterOpenDialog(false)
+  }
+  const filterDialogOkHandler = ()=>{
+    const matchedIds = data.filter(val => isFilterChecked.includes(val.id)).map(val => val.id);
+    setHiddenIds(matchedIds);
+    setIsFilterOpenDialog(false)
+    setIsFilterChecked([])
+  }
   const tableColumnData = data.length > 0 ? Object.entries(data[0])
           .filter(([key]) => key.startsWith("Column "))
-          .map(([key, columnData]) => <th >{key}</th>) : null;
+          .map(([key, columnData]) => <th>{key}<button className='th-filter' onClick={(e)=>filterRow(e, key)}><img src={filterIcon} alt="filter logo" /></button></th>) : null;
 const checkBoxHandler = (e, rowIndex)=>{
   if(e.target.checked){
     setIsChecked(prevCheckedRows => [...prevCheckedRows, rowIndex])
@@ -48,13 +88,25 @@ const newcheckBoxHandler = (e, rowIndex)=>{
     setNewlyAddedIsChecked(prevCheckedRows => prevCheckedRows.filter(index => index !== rowIndex))
   }
 }
+const filterCheckBoxHandler = (event, optionId) => {
+  if (event.target.checked) {
+    setIsFilterChecked(prevCheckedOption => [...prevCheckedOption, optionId]);
+  } else {
+    setIsFilterChecked(prevCheckedOption => prevCheckedOption.filter(id => id !== optionId));
+  }
+};
+
+
 
   const tableRowData = data.map((val, key) => {
     const filteredIDValues = Object.entries(val).filter(([key, value]) => key !== "id");
     const isCheckedRow = isChecked.includes(key);
+    if (hiddenIds.includes(val.id)) {
+      return null;
+    }
     return (
       <>
-        <tr key={key} className={isCheckedRow ? 'highlight' : ''}>
+        <tr key={key} id={val.id}  className={isCheckedRow ? 'highlight' : ''}>
           <td>
             <input type={'checkbox'} checked={isCheckedRow} onChange={(e)=>checkBoxHandler(e, key)}/>
           </td>
@@ -102,8 +154,10 @@ const newcheckBoxHandler = (e, rowIndex)=>{
             <input  type={'checkbox'} checked={isChecked.length === data.length} onChange={(e) => {
                   if (e.target.checked) {
                     setIsChecked([...Array(data.length).keys()]);
+                    setNewlyAddedIsChecked([...Array(data.length).keys()]);
                   } else {
                     setIsChecked([]);
+                    setNewlyAddedIsChecked([]);
                   }
                 }} />
             </td>
@@ -116,6 +170,15 @@ const newcheckBoxHandler = (e, rowIndex)=>{
           {tableRowData}
         </tbody>
       </table>
+      {isFilterOpenDialog ? 
+      <div className='filter-dialog'> 
+        <div id="filter-dialog">
+          {filterOptions}
+          <button onClick={filterDialogOkHandler} >OK</button>
+          <button onClick={closeFilterDialog} >Cancel</button>
+        </div>
+        </div> : 
+                ''}
       <DeleteRow delete={deleteCheckedRows}></DeleteRow>
     </div>
   )
@@ -124,7 +187,7 @@ return (
     <div>
       <Pagination 
       renderTableData={renderTableData} 
-      dataGET={[...trData, ...newTrData]}
+      dataGET={[...trData]}
       itemsPerPages={5} 
       pageLimit={5} />
     </div>
