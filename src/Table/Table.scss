@@ -1,0 +1,108 @@
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+.th-filter {
+  margin-left: 15px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+
+}
+
+.th-filter img {
+  width: 20px;
+}
+.table-style {
+  margin-bottom: 20px;
+}
+
+.delete-btn {
+  background-color: rgb(207, 39, 89);
+  float: left;
+  color: white;
+  margin: 5px;
+  width: 80px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  float: left;
+}
+
+.filter-popup {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 154px;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 4;
+  padding: 1rem;
+  width: 45rem;
+  border-radius: 6px;
+  background-color: #b9d8ce;
+  color: black;
+}
+
+table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+table thead tr th {
+  padding: 3px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  width: 25vw;
+}
+
+table thead tr th:nth-of-type(1) {
+  position: sticky;
+  z-index: 2;
+  background: grey;
+}
+
+table thead tr th:nth-of-type(2) {
+  position: sticky;
+  z-index: 2;
+  left: 28px;
+  background: grey;
+}
+
+table tbody tr td {
+  padding: 3px;
+  position: sticky;
+  z-index: 1;
+
+}
+
+table tbody tr td:nth-of-type(1) {
+  position: sticky;
+  left: 0px;
+  z-index: 2;
+  background: grey;
+}
+
+table tbody tr td:nth-of-type(2) {
+  position: sticky;
+  left: 28px;
+  z-index: 2;
+  background: grey;
+}
+
+.tableCheckboxHeader {
+  position: sticky;
+  left: 0px;
+  z-index: 2;
+  background: grey;
+}
