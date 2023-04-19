@@ -1,22 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Table.scss';
 import filterIcon from '../filterIcon.png';
 import AddTableData from '../AddTableData/AddTableData';
 
 function Table(props) {
-    const [data, setData] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
     const [filterOpen, setFilterOpen] = useState(false);
     const [filterValues, setFilterValues] = useState([]);
+    const [hiddenRows, setHiddenRows] = useState([]);
     const getData = props.data;
-
-    useEffect(() => {
-        setData([...getData])
-    }, [getData]);
 
     const handleFilterClick = (e, columnKey) => {
         e.stopPropagation();
-        const columnValues = data.map((row) => row[columnKey]);
+        const columnValues = getData.map((row) => row[columnKey]);
         const uniqueValues = [...new Set(columnValues)];
         const valuesWithChecked = uniqueValues.map((value) => ({ value, checked: true }));
         setFilterValues(valuesWithChecked);
@@ -25,7 +21,7 @@ function Table(props) {
 
     const handleFilterOkClick = () => {
         const selectedValues = filterValues.filter((value) => value.checked).map((value) => value.value);
-        const matchedObjects = data.filter(obj => {
+        const matchedObjects = props.totalData.filter(obj => {
             for (let prop in obj) {
                 if (selectedValues.includes(obj[prop])) {
                     return true;
@@ -33,10 +29,13 @@ function Table(props) {
             }
             return false;
         });
-
-        setData([...matchedObjects])
+        const matchedIds = matchedObjects.map(obj => obj.id);
+        const hiddenRows = getData.filter(row => !matchedIds.includes(row.id)).map(row => row.id);
+        setSelectedRows([]);
+        setHiddenRows(hiddenRows);
         setFilterOpen(false);
     };
+    
 
     const handleFilterCheckboxChange = (e, value) => {
         const newFilterValues = filterValues.map((filterValue) => {
@@ -57,16 +56,12 @@ function Table(props) {
     };
 
     const deleteHandler = () => {
-        if (selectedRows.length === data.length) {
-            setData([]);
-        } else {
-            const newData = data.filter((row) => !selectedRows.includes(row.id));
-            setData([...newData]);
-        }
+        const newData = props.totalData.filter((row) => !selectedRows.includes(row.id));
+        props.getDeletedData(newData)
         setSelectedRows([]);
     };
 
-    const tableColumnData = data.length > 0 ? Object.entries(data[0])
+    const tableColumnData = getData.length > 0 ? Object.entries(getData[0])
         .filter(([key]) => key.startsWith('Column '))
         .map(([key], index) => (
             <th key={index} className="column-header">
@@ -77,11 +72,12 @@ function Table(props) {
             </th>
         )) : null;
 
-
-    const tableRowData = data.map((val) => {
+    const tableRowData = getData
+    .filter(val => !hiddenRows.includes(val.id))
+    .map((val) => {
         const rowData = Object.entries(val).filter(([key, value]) => key !== 'id');
         return (
-            <tr key={val.id}>
+            <tr key={val.id} >
                 <td>
                     <input
                         type={"checkbox"}
@@ -96,22 +92,23 @@ function Table(props) {
         );
     });
 
+
     return (
         <div className="table-style">
-            <AddTableData getAddedRowdata={props.getAddedData} />
+            <AddTableData getAddedRowdata={props.getAddedData} totalData={props.totalData} />
             <table>
                 <thead>
                     <tr className="column-tr">
-                        {data.length > 0 && (
+                        {getData.length > 0 && (
                             <th className="tableCheckboxHeader">
                                 <input
                                     type="checkbox"
-                                    checked={selectedRows.length === data.length}
+                                    checked={selectedRows.length === getData.length}
                                     onChange={() => {
-                                        if (selectedRows.length === data.length) {
+                                        if (selectedRows.length === getData.length) {
                                             setSelectedRows([]);
                                         } else {
-                                            setSelectedRows(data.map((row) => row.id));
+                                            setSelectedRows(getData.map((row) => row.id));
                                         }
                                     }}
                                 />

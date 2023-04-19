@@ -20,9 +20,20 @@ const AddTableData = (props) => {
     for (let [name, value] of formData.entries()) {
       data[name] = value;
     }
+    let counter = props.totalData.length + 1;
+    let nonMatchingIdFound = false;
+    while (!nonMatchingIdFound) {
+      let matchingId = props.totalData.find((item) => item.id === counter);
+      if (matchingId) {
+        counter++;
+      } else {
+        nonMatchingIdFound = true;
+      }
+    }
+    data.id = counter;
     props.getAddedRowdata(data);
     setIsOpenDialog(false);
-  }
+  };
 
   const numOfCols = 10;
   const inputFields = [];

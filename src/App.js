@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 import Pagination from './Pagination/Pagination';
 function App() {
   return (

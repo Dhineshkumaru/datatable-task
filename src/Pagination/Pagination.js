@@ -6,21 +6,31 @@ const Pagination = ()=>{
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] =useState(0);
     
+    const rowsPerPage = 5;
     useEffect(()=>{
         fetch('https://retoolapi.dev/UvRrOB/data')
         .then((res)=> res.json())
         .then((data)=>{
             setUserData(data);
-            setTotalPages(Math.ceil(data.length / 5));
+            setTotalPages(Math.ceil(data.length / rowsPerPage));
         })
     }, [])
 
     const getAddedData=(data)=>{
         setUserData(prevData=> [data, ...prevData]); 
     }
+    const getDeletedData=(data)=>{
+        console.log(data)
+        setUserData([...data]); 
+    }
+
+    const getFilteredData=(data)=>{
+        console.log(data)
+        setUserData([...data]); 
+    }
 
     useEffect(()=>{
-        setTotalPages(Math.ceil(userData.length / 5)); 
+        setTotalPages(Math.ceil(userData.length / rowsPerPage)); 
     }, [userData]);
 
     const handlePageChange = (newPage)=>{
@@ -35,7 +45,7 @@ const Pagination = ()=>{
             setCurrentPage(1);
     }
     const handleLastClick = ()=>{
-        setCurrentPage(Math.ceil(userData.length / 5));
+        setCurrentPage(Math.ceil(userData.length / rowsPerPage));
     }
     const handlePrevClick = ()=>{
         if(currentPage > 1){
@@ -45,14 +55,19 @@ const Pagination = ()=>{
     const prevDisabled = currentPage === 1;
     const nextDisabled = currentPage === totalPages
 
-    const itemsPerPage = 5;
-    const startIndex = (currentPage-1)* itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
+    const startIndex = (currentPage-1)* rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
     const itemsToDiaplay = userData.slice(startIndex, endIndex);
     
     return (
         <>
-            <Table data={itemsToDiaplay} getAddedData={getAddedData} ></Table>
+            <Table 
+                data={itemsToDiaplay} 
+                getAddedData={getAddedData} 
+                totalData={userData} 
+                getDeletedData={getDeletedData}
+                getFilteredData={getFilteredData}
+            ></Table>
             
             <button onClick={handleFirstClick}disabled={prevDisabled}>First</button>
             <button onClick={handlePrevClick}disabled={prevDisabled}>Prev</button>
