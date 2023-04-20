@@ -20,12 +20,10 @@ const Pagination = ()=>{
         setUserData(prevData=> [data, ...prevData]); 
     }
     const getDeletedData=(data)=>{
-        console.log(data)
         setUserData([...data]); 
     }
 
     const getFilteredData=(data)=>{
-        console.log(data)
         setUserData([...data]); 
     }
 

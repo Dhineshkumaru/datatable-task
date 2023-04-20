@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import './Table.scss';
 import filterIcon from '../filterIcon.png';
 import AddTableData from '../AddTableData/AddTableData';
@@ -8,17 +8,31 @@ function Table(props) {
     const [filterOpen, setFilterOpen] = useState(false);
     const [filterValues, setFilterValues] = useState([]);
     const [hiddenRows, setHiddenRows] = useState([]);
+    const [previousFilterValues, setPreviousFilterValues] = useState([]);
     const getData = props.data;
+    
+    useEffect(() => {
+        if (filterOpen) {
+            setPreviousFilterValues([...filterValues]);
+        }
+    }, [filterOpen]);
 
     const handleFilterClick = (e, columnKey) => {
         e.stopPropagation();
         const columnValues = getData.map((row) => row[columnKey]);
         const uniqueValues = [...new Set(columnValues)];
-        const valuesWithChecked = uniqueValues.map((value) => ({ value, checked: true }));
-        setFilterValues(valuesWithChecked);
+        const newValues = uniqueValues.map((value) => {
+            const existingValue = filterValues.find((filterValue) => filterValue.value === value);
+            if (existingValue) {
+                return { ...existingValue };
+            } else {
+                return { value, checked: true };
+            }
+        });
+        setFilterValues(newValues);
         setFilterOpen(true);
     };
-
+    
     const handleFilterOkClick = () => {
         const selectedValues = filterValues.filter((value) => value.checked).map((value) => value.value);
         const matchedObjects = props.totalData.filter(obj => {
@@ -36,6 +50,10 @@ function Table(props) {
         setFilterOpen(false);
     };
     
+    const handleFilterCancel = ()=>{
+        setFilterValues([...previousFilterValues]);
+        setFilterOpen(false);
+    }
 
     const handleFilterCheckboxChange = (e, value) => {
         const newFilterValues = filterValues.map((filterValue) => {
@@ -137,6 +155,7 @@ function Table(props) {
                         </div>
                     ))}
                     <button onClick={handleFilterOkClick}>OK</button>
+                    <button onClick={handleFilterCancel}>CANCEL</button>
                 </div>
             )}
         </div>
